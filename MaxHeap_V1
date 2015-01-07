@@ -1,0 +1,156 @@
+/**
+ * maxHeap
+ *
+ * @author Dabaijing
+ * @date 2015/01/06
+ */
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class maxHeap<T extends Comparable<T>> {
+	private List<T> maHeap;
+
+	public maxHeap() {
+		this.maHeap = new ArrayList<T>();
+	}
+
+	/**
+	 * adjust from the top to buttom if the first index is 0 and the parent node
+	 * is i then the left child of i is (2*i+1) and the right child is (2*i+2)
+	 * 
+	 * @param start
+	 *            the start node
+	 * @param end
+	 *            the end node of adjust
+	 */
+
+	protected void filterdown(int start, int end) {
+		int c = start; // c is the current node position
+		int l = 2 * c + 1; // l is the left child position
+		T tmp = maHeap.get(c);// tmp is current node value
+		while (l <= end) {
+			int cmp = maHeap.get(l).compareTo(maHeap.get(l + 1));
+			// compare left child with right child
+			if (l < end && cmp < 0) {
+				l++;
+			}
+			// end when left child is greater than right child
+			cmp = tmp.compareTo(maHeap.get(l));
+			// compare the current node with leftchild
+			if (cmp >= 0)
+				break;
+			else {
+				maHeap.set(c, maHeap.get(l));
+				c = l;
+				l = 2 * l + 1;
+			}
+		}
+		maHeap.set(c, tmp);
+	}
+
+	/**
+	 * delete the data in the heap
+	 * 
+	 * @param data
+	 * @return 0 or -1 0 means delete success -1 means delete fail
+	 */
+
+	public int remove(T data) {
+		// if heap is empty then return -1
+		if (maHeap.isEmpty() == true) {
+			return -1;
+			// -1 represent the heap is empty
+		}
+		// get the index of data in the array
+		int index = maHeap.indexOf(data);
+		if (index == -1) {
+			return -1;
+		}
+		int size = maHeap.size();
+		maHeap.set(index, maHeap.get(size - 1));
+		// use the last element in the heap to make up the position of data
+		maHeap.remove(size - 1);
+		// then delete the original last element of heap
+		if (maHeap.size() > 1) {
+			filterdown(index, maHeap.size() - 1);
+			// filter again from index to bottom
+		}
+		return 0;
+	}
+
+	/**
+	 * filter maxHeap from bottom to up if the start node is i then the index of
+	 * left child is 2i+1, the right child is 2i+2 if i is the current node then
+	 * the parent node is (i-1)/2
+	 * 
+	 * @param start
+	 */
+
+	protected void filterup(int start) {
+		int c = start;
+		// c is the current node
+		int p = (c - 1) / 2;
+		// p the the parent node of current node
+		T tmp = maHeap.get(c);
+		// tmp equal to the current node
+		while (c > 0) {
+			int cmp = maHeap.get(p).compareTo(tmp);
+			// compare the parent node with current node
+			if (cmp > 0) {
+				break;
+			}
+			// if parent node is greater than current node then everythin is OK
+			else {
+				maHeap.set(c, maHeap.get(p));
+				c = p;
+				p = (p - 1) / 2;
+			}
+		}
+		maHeap.set(c, tmp);
+	}
+
+	/**
+	 * insert data into heap
+	 * 
+	 * @param data
+	 */
+	public void insert(T data) {
+		int size = maHeap.size();
+		maHeap.add(data);
+		// insert data at the last of heap
+		filterup(size);
+		// filter size from buttom to up
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < maHeap.size(); i++)
+			sb.append(maHeap.get(i) + "");
+		return sb.toString();
+	}
+
+	public static void main(String[] args) {
+		int i;
+		int a[] = { 10, 40, 30, 60, 90, 70, 20, 50, 80 };
+		maxHeap<Integer> testHeap = new maxHeap<Integer>();
+		System.out.print("\n ==>add in order: ");
+		for (i = 0; i < a.length; i++) {
+			System.out.printf("%d", a[i]);
+			testHeap.insert(a[i]);
+		}
+		System.out.printf("\n ==> maxHeap:%s", testHeap);
+		i = 85;
+		testHeap.insert(i);
+		System.out.printf("\n ==> add element: %d", i);
+		System.out.printf("\n ==> maxHeap: %s", testHeap);
+		i = 90;
+		testHeap.remove(i);
+		System.out.printf("\n ==> delete element: %d", i);
+		System.out.printf("\n ==> maxHeap: %s", testHeap);
+		System.out.printf("\n");
+
+	}
+
+}
